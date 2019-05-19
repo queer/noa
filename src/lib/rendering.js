@@ -41,6 +41,7 @@ var defaults = {
     reverseAOmultiplier: 1.0,
     useOctreesForDynamicMeshes: true,
     preserveDrawingBuffer: true,
+    cameraClass: BABYLON.FreeCamera,
 }
 
 
@@ -75,6 +76,7 @@ function Rendering(noa, opts, canvas) {
 // Constructor helper - set up the Babylon.js scene and basic components
 function initScene(self, canvas, opts) {
     if (!BABYLON) throw new Error('BABYLON.js engine not found!')
+    var CameraClass = opts.cameraClass
 
     // init internal properties
     self._engine = new BABYLON.Engine(canvas, opts.antiAlias, {
@@ -93,7 +95,7 @@ function initScene(self, canvas, opts) {
     // camera, and empty mesh to hold it, and one to accumulate rotations
     self._rotationHolder = new BABYLON.Mesh('rotHolder', scene)
     self._cameraHolder = new BABYLON.Mesh('camHolder', scene)
-    self._camera = new BABYLON.FreeCamera('camera', new vec3(0, 0, 0), scene)
+    self._camera = new CameraClass('camera', new vec3(0, 0, 0), scene)
     self._camera.parent = self._cameraHolder
     self._camera.minZ = .01
     self._cameraHolder.visibility = false
