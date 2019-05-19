@@ -72,7 +72,9 @@ function Engine(opts) {
     this._tickRate = opts.tickRate
     this._paused = false
     this._dragOutsideLock = opts.dragCameraOutsidePointerLock
+    this._thirdPerson = opts.thirdPerson
     var self = this
+    console.log("third person?", this._thirdPerson)
 
     // container (html/div) manager
     this.container = createContainer(this, opts)
@@ -374,7 +376,7 @@ Engine.prototype.getCameraVector = function () {
 var _camVec = vec3.create()
 
 
-
+var PI_2 = Math.PI / 2
 /**
  * Raycast through the world, returning a result object for any non-air block
  * @param pos
@@ -392,10 +394,19 @@ Engine.prototype.pick = function (pos, vec, dist, blockIdTestFunction) {
     }
     pos = pos || this.getPlayerEyePosition()
     vec = vec || this.getCameraVector()
+    var moved = new Float32Array([vec[0], vec[1], vec[2]])
+    if(this._thirdPerson) {
+        var [pitch, yaw] = this.rendering.getCameraRotation()
+        yaw *= -0.75
+        var x = Math.cos(yaw) * Math.cos(pitch)
+        var z = Math.sin(yaw) * Math.cos(pitch)
+        var y = Math.sin(pitch)
+        moved = new Float32Array([x, y, z])
+    }
     dist = dist || this.blockTestDistance
     var rpos = _hitResult.position
     var rnorm = _hitResult.normal
-    var hit = raycast(testVoxel, pos, vec, dist, rpos, rnorm)
+    var hit = raycast(testVoxel, pos, moved, dist, rpos, rnorm)
     if (!hit) return null
     // position is right on a voxel border - adjust it so flooring will work as expected
     for (var i = 0; i < 3; i++) rpos[i] -= 0.01 * rnorm[i]

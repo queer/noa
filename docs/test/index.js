@@ -12,7 +12,7 @@ var noaEngine = require('../..')
 var opts = {
 	debug: true,
 	showFPS: true,
-	inverseY: true,
+	inverseY: false,
 	chunkSize: 32,
 	chunkAddDistance: 2,
 	chunkRemoveDistance: 3,
@@ -25,6 +25,7 @@ var opts = {
 	useAO: true,
 	AOmultipliers: [0.92, 0.8, 0.5],
 	reverseAOmultiplier: 1.0,
+	thirdPerson: true,
 }
 
 
@@ -178,6 +179,12 @@ var scene = noa.rendering.getScene()  // Babylon's "Scene" object
 var playerMesh = BABYLON.Mesh.CreateBox('player', 1, scene)
 playerMesh.scaling.x = playerMesh.scaling.z = w
 playerMesh.scaling.y = h
+
+noa.rendering._camera.target = mesh
+noa.rendering._camera.lockedTarget = mesh
+noa.rendering._camera.radius = 16
+noa.rendering._camera.heightOffset = 16
+noa.rendering._camera.rotationOffset = 180
 
 // offset of mesh relative to the entity's "position" (center of its feet)
 var offset = [0, h / 2, 0]

@@ -41,7 +41,7 @@ var defaults = {
     reverseAOmultiplier: 1.0,
     useOctreesForDynamicMeshes: true,
     preserveDrawingBuffer: true,
-    cameraClass: BABYLON.FreeCamera,
+    thirdPerson: false,
 }
 
 
@@ -64,6 +64,7 @@ function Rendering(noa, opts, canvas) {
     this.meshingCutoffTime = 6 // ms
     this._dynamicMeshOctrees = opts.useOctreesForDynamicMeshes
     this._resizeDebounce = 250 // ms
+    this._thirdPerson = opts.thirdPerson
 
     // set up babylon scene
     initScene(this, canvas, opts)
@@ -76,7 +77,12 @@ function Rendering(noa, opts, canvas) {
 // Constructor helper - set up the Babylon.js scene and basic components
 function initScene(self, canvas, opts) {
     if (!BABYLON) throw new Error('BABYLON.js engine not found!')
-    var CameraClass = opts.cameraClass
+    var CameraClass
+    if(opts.thirdPerson) {
+        CameraClass = BABYLON.FollowCamera
+    } else {
+        CameraClass = BABYLON.FreeCamera
+    }
 
     // init internal properties
     self._engine = new BABYLON.Engine(canvas, opts.antiAlias, {
